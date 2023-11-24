@@ -8,6 +8,7 @@ declare global {
       DB_USER: string
       BD_PASSWORD: string
       DB_SERVER: string
+      DB_NAME: string
     }
   }
 }

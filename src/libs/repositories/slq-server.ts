@@ -1,9 +1,8 @@
 import sql, { ConnectionError, PreparedStatementError, RequestError, TransactionError } from 'mssql'
-import { cookies } from 'next/headers'
 
 export const sqlQuery = async <T>(query: TemplateStringsArray): Promise<SQLQueryResult<T>> => {
   try {
-    const pool = await getConnection(cookies().get('dbName')?.value ?? 'master')
+    const pool = await getConnection()
 
     if (!pool) {
       return {
@@ -66,14 +65,14 @@ export const sqlQuery = async <T>(query: TemplateStringsArray): Promise<SQLQuery
   }
 }
 
-const getConnection = async (dbName: string) => {
+const getConnection = async () => {
   try {
     // sql.connect() will return the existing global pool if it exists or create a new one if it doesn't
     const pool = await sql.connect({
       user: 'sa',
       password: process.env.BD_PASSWORD,
       server: process.env.DB_SERVER,
-      database: dbName,
+      database: process.env.DB_NAME,
       options: {
         encrypt: true, // for azure
         trustServerCertificate: true, // change to true for local dev / self-signed certs
