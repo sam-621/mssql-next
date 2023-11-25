@@ -6,12 +6,13 @@ import { useFormState } from 'react-dom'
 import { authenticate } from '../actions'
 import { FormButton } from '@/components/form-button'
 import { Button } from '@/components/button'
+import { ButtonLink } from '@/components/button-link'
 
 export const LoginForm = () => {
   const [state, action] = useFormState(authenticate, { finished: false, success: false })
 
   return (
-    <Card className=' w-full'>
+    <Card className='flex flex-col gap-4 w-full'>
       <form action={action} className='flex flex-col gap-5'>
         <div>
           <h2 className='text-2xl font-semibold'>Conectividad - Articulos</h2>
@@ -36,17 +37,17 @@ export const LoginForm = () => {
             <span className='text-red-500'>{state.error}</span>
           </div>
         )}
-        {state.finished && state.success && (
-          <div className='flex flex-col gap-4 justify-center items-center'>
-            <Button variant='secondary' className='px-16 py-6'>
-              Captura
-            </Button>
-            <Button variant='secondary' className='px-16 py-6'>
-              Consulta
-            </Button>
-          </div>
-        )}
       </form>
+      {state.finished && state.success && (
+        <div className='flex flex-col gap-4 justify-center items-center'>
+          <ButtonLink href='/capture' variant='secondary' className='px-16 py-6'>
+            Captura
+          </ButtonLink>
+          <ButtonLink href='/consult' variant='secondary' className='px-16 py-6'>
+            Consulta
+          </ButtonLink>
+        </div>
+      )}
     </Card>
   )
 }
