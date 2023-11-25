@@ -1,4 +1,4 @@
-import { PageLayout } from '@/components/page-layout'
+import { PageLayout } from '@/components/layout'
 import { LoginForm } from './components'
 
 export default function AuthPage() {

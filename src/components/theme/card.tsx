@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren } from 'react'
-import { cn } from './utils'
+import { cn } from '../utils'
 
 export const Card: FC<Props> = ({ children, className }) => {
   return (

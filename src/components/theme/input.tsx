@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { cn } from './utils'
+import { cn } from '../utils'
 
 export const Input: FC<Props> = ({ className, label, ...rest }) => {
   return (

@@ -1,12 +1,9 @@
 'use client'
 
-import { Card } from '@/components/card'
-import { Input } from '@/components/input'
+import { FormButton } from '@/components/forms'
+import { ButtonLink, Card, Input } from '@/components/theme'
 import { useFormState } from 'react-dom'
 import { authenticate } from '../actions'
-import { FormButton } from '@/components/form-button'
-import { Button } from '@/components/button'
-import { ButtonLink } from '@/components/button-link'
 
 export const LoginForm = () => {
   const [state, action] = useFormState(authenticate, { finished: false, success: false })

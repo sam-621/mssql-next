@@ -1,9 +1,10 @@
 import { FC, PropsWithChildren } from 'react'
-import { cn } from './utils'
+import { cn } from '../utils'
+import Link from 'next/link'
 
-export const Button: FC<Props> = ({ children, className, variant = 'primary', ...rest }) => {
+export const ButtonLink: FC<Props> = ({ children, className, variant = 'primary', ...rest }) => {
   return (
-    <button
+    <Link
       {...rest}
       className={cn(
         {
@@ -16,11 +17,12 @@ export const Button: FC<Props> = ({ children, className, variant = 'primary', ..
       )}
     >
       {children}
-    </button>
+    </Link>
   )
 }
 
 type Props = PropsWithChildren &
-  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+    href: string
     variant?: 'primary' | 'secondary'
   }

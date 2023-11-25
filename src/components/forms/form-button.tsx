@@ -3,7 +3,7 @@
 import { Loader2Icon } from 'lucide-react'
 import { type FC, type PropsWithChildren, type ReactElement } from 'react'
 import { useFormStatus } from 'react-dom'
-import { Button } from './button'
+import { Button } from '../theme/button'
 
 export const FormButton: FC<Props> = ({ icon: propIcon, children }) => {
   const { pending } = useFormStatus()

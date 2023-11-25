@@ -1,7 +1,5 @@
-import { Button } from '@/components/button'
-import { Input } from '@/components/input'
-import { PageLayout } from '@/components/page-layout'
-import { RadioButton } from '@/components/radio-button'
+import { PageLayout } from '@/components/layout'
+import { Button, Input, RadioButton } from '@/components/theme'
 
 export default async function CapturePage() {
   return (
