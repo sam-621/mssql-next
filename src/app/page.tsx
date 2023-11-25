@@ -1,4 +1,4 @@
-import { sqlQuery } from '@/libs/repositories/slq-server'
+import { sqlQuery } from '@/libs/repositories/sql-server'
 import { ConnectionPool, pool } from 'mssql'
 import Image from 'next/image'
 

@@ -1,8 +1,12 @@
 import sql, { ConnectionError, PreparedStatementError, RequestError, TransactionError } from 'mssql'
+import { cookies } from 'next/headers'
 
 export const sqlQuery = async <T>(query: TemplateStringsArray): Promise<SQLQueryResult<T>> => {
   try {
-    const pool = await getConnection()
+    const username = cookies().get('username')?.value ?? process.env.DB_USER
+    const password = cookies().get('password')?.value ?? process.env.BD_PASSWORD
+
+    const pool = await getConnection(username, password)
 
     if (!pool) {
       return {
@@ -65,12 +69,11 @@ export const sqlQuery = async <T>(query: TemplateStringsArray): Promise<SQLQuery
   }
 }
 
-const getConnection = async () => {
+export const getConnection = async (username: string, password: string) => {
   try {
-    // sql.connect() will return the existing global pool if it exists or create a new one if it doesn't
-    const pool = await sql.connect({
-      user: 'sa',
-      password: process.env.BD_PASSWORD,
+    const pool = new sql.ConnectionPool({
+      user: username,
+      password: password,
       server: process.env.DB_SERVER,
       database: process.env.DB_NAME,
       options: {
@@ -78,7 +81,10 @@ const getConnection = async () => {
         trustServerCertificate: true, // change to true for local dev / self-signed certs
       },
     })
-    return pool
+
+    const connection = await pool.connect()
+
+    return connection
   } catch (error) {
     console.error(error)
     return null

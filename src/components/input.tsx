@@ -5,7 +5,7 @@ export const Input: FC<Props> = ({ className, label, ...rest }) => {
   return (
     <div className={cn(className)}>
       <label
-        htmlFor={rest.id}
+        htmlFor={rest.id ?? rest.name}
         className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
       >
         {label}
