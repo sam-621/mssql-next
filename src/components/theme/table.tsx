@@ -5,19 +5,16 @@ export const Table = () => {
         <thead className='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
           <tr>
             <th scope='col' className='px-6 py-3'>
-              Product name
+              Clave
             </th>
             <th scope='col' className='px-6 py-3'>
-              Color
+              Nombre
             </th>
             <th scope='col' className='px-6 py-3'>
-              Category
+              Descripción
             </th>
             <th scope='col' className='px-6 py-3'>
-              Price
-            </th>
-            <th scope='col' className='px-6 py-3'>
-              <span className='sr-only'>Edit</span>
+              Precio
             </th>
           </tr>
         </thead>
@@ -32,11 +29,6 @@ export const Table = () => {
             <td className='px-6 py-4'>Silver</td>
             <td className='px-6 py-4'>Laptop</td>
             <td className='px-6 py-4'>$2999</td>
-            <td className='px-6 py-4 text-right'>
-              <a href='#' className='font-medium text-blue-600 dark:text-blue-500 hover:underline'>
-                Edit
-              </a>
-            </td>
           </tr>
           <tr className='bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'>
             <th
@@ -48,11 +40,6 @@ export const Table = () => {
             <td className='px-6 py-4'>White</td>
             <td className='px-6 py-4'>Laptop PC</td>
             <td className='px-6 py-4'>$1999</td>
-            <td className='px-6 py-4 text-right'>
-              <a href='#' className='font-medium text-blue-600 dark:text-blue-500 hover:underline'>
-                Edit
-              </a>
-            </td>
           </tr>
           <tr className='bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600'>
             <th
@@ -64,11 +51,6 @@ export const Table = () => {
             <td className='px-6 py-4'>Black</td>
             <td className='px-6 py-4'>Accessories</td>
             <td className='px-6 py-4'>$99</td>
-            <td className='px-6 py-4 text-right'>
-              <a href='#' className='font-medium text-blue-600 dark:text-blue-500 hover:underline'>
-                Edit
-              </a>
-            </td>
           </tr>
         </tbody>
       </table>
