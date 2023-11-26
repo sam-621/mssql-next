@@ -7,8 +7,7 @@ import { Loader2Icon, MoveLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 import { FormEvent, useEffect, useState } from 'react'
 import { getArticlesFiltered, getFamilies } from '../consult/actions'
-import { ArticleRepository } from '@/libs/repositories'
-import { createArticle, getArticleById } from './actions'
+import { createArticle, getArticleById, updateArticle } from './actions'
 import { toast } from 'sonner'
 import { useDebouncedCallback } from 'use-debounce'
 
@@ -42,8 +41,7 @@ export default function CapturePage() {
 
   // mutation states
   const [refetch, setRefetch] = useState(0)
-  const [isCreating, setIsCreating] = useState(false)
-  const [isUpdating, setIsUpdating] = useState(false)
+  const [isMutating, setIsMutating] = useState(false)
 
   // Fetch families
   useEffect(() => {
@@ -67,10 +65,7 @@ export default function CapturePage() {
       setIsSearching(true)
 
       if (!term) {
-        setName('')
-        setDescription('')
-        setPrice('')
-        setSelectedFamily('')
+        cleanupForm(true)
 
         setIsSearching(false)
         return
@@ -79,10 +74,7 @@ export default function CapturePage() {
       const article = await getArticleById(id)
 
       if (!article) {
-        setName('')
-        setDescription('')
-        setPrice('')
-        setSelectedFamily('')
+        cleanupForm(true)
 
         toast.error('El artículo no existe')
         setIsSearching(false)
@@ -99,18 +91,24 @@ export default function CapturePage() {
     }
   }, 300)
 
-  const cleanupForm = () => {
-    setId('')
+  const cleanupForm = (withoutId?: boolean) => {
+    cleanupErrors()
+
+    !withoutId && setId('')
     setName('')
     setDescription('')
     setPrice('')
     setSelectedFamily('')
   }
 
-  const create = async (e: FormEvent) => {
-    e.preventDefault()
+  const cleanupErrors = () => {
     setErrors({ name: '', description: '', price: '', family: '' })
-    setIsCreating(true)
+  }
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    cleanupErrors()
+    setIsMutating(true)
 
     if (!name || !description || !price || !selectedFamily) {
       setErrors({
@@ -119,27 +117,38 @@ export default function CapturePage() {
         price: !price ? 'El precio es requerido' : '',
         family: !selectedFamily ? 'La familia es requerida' : '',
       })
-      setIsCreating(false)
+      setIsMutating(false)
       return
     }
 
     if (!Number(price)) {
       setErrors({ ...errors, price: 'El precio debe ser un número' })
-      setIsCreating(false)
+      setIsMutating(false)
       return
     }
 
-    await createArticle({
-      id: String(articles.length + 1),
-      name,
-      description,
-      price,
-      famId: selectedFamily,
-    })
+    formState === FormState.CREATE
+      ? await createArticle({
+          id: String(articles.length + 1),
+          name,
+          description,
+          price,
+          famId: selectedFamily,
+        })
+      : await updateArticle({
+          id,
+          name,
+          description,
+          price,
+          famId: selectedFamily,
+        })
+
     setRefetch(refetch + 1)
 
-    toast.success('Artículo creado correctamente')
-    setIsCreating(false)
+    toast.success(
+      `Artículo ${formState === FormState.CREATE ? 'creado' : 'actualizado'} correctamente`
+    )
+    setIsMutating(false)
   }
 
   return (
@@ -151,11 +160,14 @@ export default function CapturePage() {
           </Link>
           <h1 className='text-2xl font-semibold'>Capturar</h1>
         </div>
-        <form onSubmit={create} className='flex flex-col gap-8'>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-8'>
           <div className='flex justify-between w-full'>
             <div className='flex gap-4'>
               <RadioButton
-                onChange={() => setFormState(FormState.CREATE)}
+                onChange={() => {
+                  cleanupForm()
+                  setFormState(FormState.CREATE)
+                }}
                 defaultChecked
                 name='create'
                 value={FormState.CREATE}
@@ -163,7 +175,10 @@ export default function CapturePage() {
                 label='Nuevo'
               />
               <RadioButton
-                onChange={() => setFormState(FormState.UPDATE)}
+                onChange={() => {
+                  cleanupForm()
+                  setFormState(FormState.UPDATE)
+                }}
                 name='update'
                 value={FormState.UPDATE}
                 label='Modificar'
@@ -171,10 +186,18 @@ export default function CapturePage() {
               />
             </div>
             <div className='flex gap-4'>
-              <Button type='button' onClick={cleanupForm} variant='secondary'>
+              <Button
+                type='button'
+                onClick={() => {
+                  cleanupForm()
+                }}
+                variant='secondary'
+              >
                 Limpiar
               </Button>
-              <Button type='submit'>Grabar</Button>
+              <Button disabled={isMutating} type='submit'>
+                Grabar
+              </Button>
             </div>
           </div>
           <div className='flex flex-col gap-4 w-full'>

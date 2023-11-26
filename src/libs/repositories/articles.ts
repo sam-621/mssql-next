@@ -90,11 +90,11 @@ const create = async (article: Omit<Article, 'famName'>): Promise<void> => {
   }
 }
 
-const update = async (article: Article): Promise<void> => {
+const update = async (article: Omit<Article, 'famName'>): Promise<void> => {
   const result = await sqlQuery<SQLArticle>(`
     UPDATE ARTICULOS SET 
-      artnombre = ${article.name},
-      artdescripcion = ${article.description},
+      artnombre = '${article.name}',
+      artdescripcion = '${article.description}',
       artprecio = ${article.price},
       famid = ${article.famId}
     WHERE artid = ${article.id}

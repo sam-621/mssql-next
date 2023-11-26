@@ -10,3 +10,7 @@ export const getArticleById = async (id: string) => {
 export const createArticle = async (article: Omit<Article, 'famName'>) => {
   return ArticleRepository.create(article)
 }
+
+export const updateArticle = async (article: Omit<Article, 'famName'>) => {
+  return ArticleRepository.update(article)
+}
