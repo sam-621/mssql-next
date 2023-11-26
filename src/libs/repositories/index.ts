@@ -1,1 +1,1 @@
-export * from './sql-server'
+export * from './articles'

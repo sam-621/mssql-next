@@ -1,4 +1,4 @@
-export type Articles = {
+export type Article = {
   id: string
   name: string
   description: string
