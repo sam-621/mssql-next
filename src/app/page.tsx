@@ -1,5 +1,4 @@
 import { sqlQuery } from '@/libs/repositories/sql-server'
-import { ConnectionPool, pool } from 'mssql'
 import Image from 'next/image'
 
 export default async function Home() {
