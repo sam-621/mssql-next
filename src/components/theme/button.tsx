@@ -2,7 +2,13 @@ import { FC, PropsWithChildren } from 'react'
 import { cn } from '../utils'
 import { Loader2Icon } from 'lucide-react'
 
-export const Button: FC<Props> = ({ children, className, variant = 'primary', ...rest }) => {
+export const Button: FC<Props> = ({
+  children,
+  className,
+  variant = 'primary',
+  withNoIcon,
+  ...rest
+}) => {
   return (
     <button
       {...rest}
@@ -13,11 +19,13 @@ export const Button: FC<Props> = ({ children, className, variant = 'primary', ..
             variant === 'primary',
           'text-white bg-gray-700 hover:bg-gray-900 focus:outline-none focus:ring-gray-300 ':
             variant === 'secondary',
+          'text-white bg-red-700 hover:bg-red-900 focus:outline-none focus:ring-red-300 ':
+            variant === 'danger',
         },
         className
       )}
     >
-      {rest.disabled && <Loader2Icon className='mr-2 h-4 w-4 animate-spin' />}
+      {rest.disabled && !withNoIcon && <Loader2Icon className='mr-2 h-4 w-4 animate-spin' />}
       {children}
     </button>
   )
@@ -25,5 +33,6 @@ export const Button: FC<Props> = ({ children, className, variant = 'primary', ..
 
 type Props = PropsWithChildren &
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: 'primary' | 'secondary'
+    variant?: 'primary' | 'secondary' | 'danger'
+    withNoIcon?: boolean
   }

@@ -105,9 +105,20 @@ const update = async (article: Omit<Article, 'famName'>): Promise<void> => {
   }
 }
 
+const remove = async (id: string): Promise<void> => {
+  const result = await sqlQuery<SQLArticle>(`
+    DELETE FROM ARTICULOS WHERE artid = ${id}
+`)
+
+  if (!result.success) {
+    console.log(result.error)
+  }
+}
+
 export const ArticleRepository = {
   getMany,
   getById,
   create,
   update,
+  remove,
 }

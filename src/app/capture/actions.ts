@@ -14,3 +14,7 @@ export const createArticle = async (article: Omit<Article, 'famName'>) => {
 export const updateArticle = async (article: Omit<Article, 'famName'>) => {
   return ArticleRepository.update(article)
 }
+
+export const removeArticle = async (id: string) => {
+  return ArticleRepository.remove(id)
+}

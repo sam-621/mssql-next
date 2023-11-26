@@ -7,7 +7,7 @@ import { Loader2Icon, MoveLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 import { FormEvent, useEffect, useState } from 'react'
 import { getArticlesFiltered, getFamilies } from '../consult/actions'
-import { createArticle, getArticleById, updateArticle } from './actions'
+import { createArticle, getArticleById, removeArticle, updateArticle } from './actions'
 import { toast } from 'sonner'
 import { useDebouncedCallback } from 'use-debounce'
 
@@ -42,6 +42,8 @@ export default function CapturePage() {
   // mutation states
   const [refetch, setRefetch] = useState(0)
   const [isMutating, setIsMutating] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [mutatingNoExistingArticle, setMutatingNoExistingArticle] = useState(false)
 
   // Fetch families
   useEffect(() => {
@@ -52,6 +54,7 @@ export default function CapturePage() {
     })()
   }, [])
 
+  // fetch table articles
   useEffect(() => {
     ;(async () => {
       const articles = await getArticlesFiltered('', '', '', '', '')
@@ -75,11 +78,14 @@ export default function CapturePage() {
 
       if (!article) {
         cleanupForm(true)
+        setMutatingNoExistingArticle(true)
 
         toast.error('El artículo no existe')
         setIsSearching(false)
         return
       }
+
+      setMutatingNoExistingArticle(false)
 
       setId(article.id)
       setName(article.name)
@@ -92,6 +98,7 @@ export default function CapturePage() {
   }, 300)
 
   const cleanupForm = (withoutId?: boolean) => {
+    setMutatingNoExistingArticle(false)
     cleanupErrors()
 
     !withoutId && setId('')
@@ -127,6 +134,12 @@ export default function CapturePage() {
       return
     }
 
+    if (formState === FormState.UPDATE && !id) {
+      toast.error('El artículo que tratas de actualizar no existe')
+      setIsMutating(false)
+      return
+    }
+
     formState === FormState.CREATE
       ? await createArticle({
           id: String(articles.length + 1),
@@ -149,6 +162,36 @@ export default function CapturePage() {
       `Artículo ${formState === FormState.CREATE ? 'creado' : 'actualizado'} correctamente`
     )
     setIsMutating(false)
+  }
+
+  const deleteArticle = async () => {
+    setIsDeleting(true)
+
+    if (formState !== FormState.UPDATE) {
+      setIsDeleting(false)
+      return
+    }
+
+    if (!id) {
+      setIsDeleting(false)
+      toast.error('No se ha seleccionado ningún artículo')
+      return
+    }
+
+    const article = await getArticleById(id)
+
+    if (!article) {
+      setIsDeleting(false)
+      toast.error('El artículo que tratas de eliminar no existe')
+      return
+    }
+
+    await removeArticle(id)
+    toast.success('Artículo eliminado correctamente')
+    setRefetch(refetch + 1)
+
+    cleanupForm()
+    setIsDeleting(false)
   }
 
   return (
@@ -198,6 +241,15 @@ export default function CapturePage() {
               <Button disabled={isMutating} type='submit'>
                 Grabar
               </Button>
+              <Button
+                onClick={deleteArticle}
+                disabled={isDeleting || formState === FormState.CREATE || mutatingNoExistingArticle}
+                withNoIcon={formState === FormState.CREATE || mutatingNoExistingArticle}
+                variant='danger'
+                type='button'
+              >
+                Eliminar
+              </Button>
             </div>
           </div>
           <div className='flex flex-col gap-4 w-full'>
@@ -217,24 +269,28 @@ export default function CapturePage() {
               {isSearching && <Loader2Icon size={24} className='mb-[6px] animate-spin' />}
             </div>
             <Input
+              disabled={mutatingNoExistingArticle}
               value={name}
               label='Nombre'
               onChange={(e) => setName(e.target.value)}
               errorMessage={errors.name}
             />
             <Input
+              disabled={mutatingNoExistingArticle}
               value={description}
               label='Descripción'
               onChange={(e) => setDescription(e.target.value)}
               errorMessage={errors.description}
             />
             <Input
+              disabled={mutatingNoExistingArticle}
               value={price}
               label='Precio'
               onChange={(e) => setPrice(e.target.value)}
               errorMessage={errors.price}
             />
             <Select
+              disabled={mutatingNoExistingArticle}
               value={selectedFamily}
               label='Familias'
               placeholder='Seleccione una familia'
