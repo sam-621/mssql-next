@@ -9,7 +9,7 @@ export const LoginForm = () => {
   const [state, action] = useFormState(authenticate, { finished: false, success: false })
 
   return (
-    <Card className='flex flex-col gap-4 w-full'>
+    <Card className='flex flex-col gap-4 w-full h-fit'>
       <form action={action} className='flex flex-col gap-5'>
         <div>
           <h2 className='text-2xl font-semibold'>Conectividad - Articulos</h2>
