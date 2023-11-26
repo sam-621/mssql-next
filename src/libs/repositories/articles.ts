@@ -10,23 +10,55 @@ export type SQLArticle = {
   famid: string
 }
 
-const getMany = async (): Promise<Article[]> => {
-  const result = await sqlQuery<SQLArticle>`SELECT * FROM articles`
+const getMany = async (
+  id: string,
+  name: string,
+  description: string,
+  price: string
+): Promise<Article[]> => {
+  let query = 'SELECT * FROM ARTICULOS'
+
+  if (id || name || description || price) {
+    query += ' WHERE '
+  }
+
+  if (id) {
+    query += `artid = ${id} AND `
+  }
+
+  if (name) {
+    query += `artnombre LIKE '%${name}%' AND `
+  }
+
+  if (description) {
+    query += `artdescripcion LIKE '%${description}%' AND `
+  }
+
+  if (price) {
+    query += `artprecio = ${price}`
+  }
+
+  // Remove last AND if needed
+  if (query.slice(-5) === ' AND ') {
+    query = query.slice(0, -5)
+  }
+
+  const result = await sqlQuery<SQLArticle>(query)
 
   if (!result.success) {
     console.log(result.error)
     return []
   }
 
-  return result.data.map((article) => getArticleMapped(article))
+  return result.data.map(getArticleMapped)
 }
 
 const create = async (article: Article): Promise<Article | null> => {
-  const result = await sqlQuery<SQLArticle>`
+  const result = await sqlQuery<SQLArticle>(`
   INSERT INTO articles (name, description, price, famId)
   VALUES (${article.name}, ${article.description}, ${article.price}, ${article.famId})
   RETURNING *
-`
+`)
 
   if (!result.success) {
     console.log(result.error)
@@ -37,12 +69,12 @@ const create = async (article: Article): Promise<Article | null> => {
 }
 
 const update = async (article: Article): Promise<Article | null> => {
-  const result = await sqlQuery<SQLArticle>`
+  const result = await sqlQuery<SQLArticle>(`
   UPDATE articles
   SET name = ${article.name}, description = ${article.description}, price = ${article.price}, famId = ${article.famId}
   WHERE id = ${article.id}
   RETURNING *
-`
+`)
 
   if (!result.success) {
     console.log(result.error)

@@ -1,10 +1,7 @@
 import sql, { ConnectionError, PreparedStatementError, RequestError, TransactionError } from 'mssql'
 import { cookies } from 'next/headers'
 
-export const sqlQuery = async <T>(
-  query: TemplateStringsArray,
-  ...values: string[]
-): Promise<SQLQueryResult<T[]>> => {
+export const sqlQuery = async <T>(query: string): Promise<SQLQueryResult<T[]>> => {
   try {
     const username = cookies().get('username')?.value ?? process.env.DB_USER
     const password = cookies().get('password')?.value ?? process.env.BD_PASSWORD
@@ -27,6 +24,8 @@ export const sqlQuery = async <T>(
     }
   } catch (error) {
     if (error instanceof RequestError) {
+      console.log(error)
+
       return {
         dbError: true,
         error: 'Error al ejecutar la consulta',

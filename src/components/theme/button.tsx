@@ -1,5 +1,6 @@
 import { FC, PropsWithChildren } from 'react'
 import { cn } from '../utils'
+import { Loader2Icon } from 'lucide-react'
 
 export const Button: FC<Props> = ({ children, className, variant = 'primary', ...rest }) => {
   return (
@@ -16,6 +17,7 @@ export const Button: FC<Props> = ({ children, className, variant = 'primary', ..
         className
       )}
     >
+      {rest.disabled && <Loader2Icon className='mr-2 h-4 w-4 animate-spin' />}
       {children}
     </button>
   )
