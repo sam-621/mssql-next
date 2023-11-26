@@ -63,6 +63,22 @@ const getMany = async (
   return result.data
 }
 
+const getById = async (id: string): Promise<Article | null> => {
+  const result = await sqlQuery<Article>(`
+    SELECT id=A.artid, name=A.artnombre, description=A.artdescripcion, price=A.artprecio, famId=A.famid, famName=F.famnombre 
+    FROM ARTICULOS A 
+    INNER JOIN Familias F ON F.famid = A.famid
+    WHERE A.artid = ${id}
+  `)
+
+  if (!result.success) {
+    console.log(result.error)
+    return null
+  }
+
+  return result.data[0]
+}
+
 const create = async (article: Article): Promise<Article | null> => {
   const result = await sqlQuery<SQLArticle>(`
   INSERT INTO articles (name, description, price, famId)
@@ -96,6 +112,7 @@ const update = async (article: Article): Promise<Article | null> => {
 
 export const ArticleRepository = {
   getMany,
+  getById,
   create,
   update,
 }
