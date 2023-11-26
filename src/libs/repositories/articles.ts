@@ -8,17 +8,23 @@ export type SQLArticle = {
   artdescripcion: string
   artprecio: string
   famid: string
+  famnombre: string
 }
 
 const getMany = async (
   id: string,
   name: string,
   description: string,
-  price: string
+  price: string,
+  familyId: string
 ): Promise<Article[]> => {
-  let query = 'SELECT * FROM ARTICULOS'
+  let query = `
+    SELECT id=A.artid, name=A.artnombre, description=A.artdescripcion, price=A.artprecio, famId=A.famid, famName=F.famnombre 
+    FROM ARTICULOS A 
+    INNER JOIN Familias F ON F.famid = A.famid
+  `
 
-  if (id || name || description || price) {
+  if (id || name || description || price || familyId) {
     query += ' WHERE '
   }
 
@@ -35,7 +41,11 @@ const getMany = async (
   }
 
   if (price) {
-    query += `artprecio = ${price}`
+    query += `artprecio = ${price} AND `
+  }
+
+  if (familyId) {
+    query += `A.famid = ${familyId}`
   }
 
   // Remove last AND if needed
@@ -43,14 +53,14 @@ const getMany = async (
     query = query.slice(0, -5)
   }
 
-  const result = await sqlQuery<SQLArticle>(query)
+  const result = await sqlQuery<Article>(query)
 
   if (!result.success) {
     console.log(result.error)
     return []
   }
 
-  return result.data.map(getArticleMapped)
+  return result.data
 }
 
 const create = async (article: Article): Promise<Article | null> => {

@@ -4,4 +4,5 @@ export type Article = {
   description: string
   price: string
   famId: string
+  famName: string
 }

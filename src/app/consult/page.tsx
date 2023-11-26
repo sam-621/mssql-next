@@ -1,12 +1,12 @@
 'use client'
 
 import { PageLayout } from '@/components/layout'
-import { Button, ErrorMessage, Input, Table } from '@/components/theme'
+import { Button, ErrorMessage, Input, Select, Table } from '@/components/theme'
 import { MoveLeftIcon } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
-import { getArticlesFiltered } from './actions'
-import { Article } from '@/libs/types'
+import { useEffect, useState } from 'react'
+import { getArticlesFiltered, getFamilies } from './actions'
+import { Article, Family } from '@/libs/types'
 
 export default function ConsultPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -15,11 +15,27 @@ export default function ConsultPage() {
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
   const [articles, setArticles] = useState<Article[]>([])
+  const [families, setFamilies] = useState<Family[]>([])
+  const [selectedFamily, setSelectedFamily] = useState<string>()
+
+  useEffect(() => {
+    ;(async () => {
+      const families = await getFamilies()
+
+      setFamilies(families)
+    })()
+  }, [])
 
   const search = async () => {
     setIsLoading(true)
 
-    const articles = await getArticlesFiltered(id, name, description, price)
+    const articles = await getArticlesFiltered(
+      id,
+      name,
+      description,
+      price,
+      Number(selectedFamily) ? selectedFamily ?? '' : ''
+    )
 
     setArticles(articles)
     setIsLoading(false)
@@ -39,6 +55,12 @@ export default function ConsultPage() {
           <Input label='Nombre' onChange={(e) => setName(e.target.value)} />
           <Input label='Descripción' onChange={(e) => setDescription(e.target.value)} />
           <Input label='Precio' onChange={(e) => setPrice(e.target.value)} />
+          <Select
+            label='Familias'
+            placeholder='Seleccione una familia'
+            options={families.map((f) => ({ label: f.name, value: f.id }))}
+            onChange={(val) => setSelectedFamily(val as string)}
+          />
         </div>
         <div className='flex justify-between w-full items-center'>
           <ErrorMessage message='Error message' />

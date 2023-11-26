@@ -19,6 +19,9 @@ export const Table: FC<Props> = ({ articles }) => {
             <th scope='col' className='px-6 py-3'>
               Precio
             </th>
+            <th scope='col' className='px-6 py-3'>
+              Familia
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -36,6 +39,7 @@ export const Table: FC<Props> = ({ articles }) => {
               <td className='px-6 py-4'>{article.name}</td>
               <td className='px-6 py-4'>{article.description}</td>
               <td className='px-6 py-4'>{article.price}</td>
+              <td className='px-6 py-4'>{article.famName}</td>
             </tr>
           ))}
         </tbody>

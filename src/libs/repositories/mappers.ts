@@ -8,5 +8,6 @@ export const getArticleMapped = (sqlArticle: SQLArticle): Article => {
     description: sqlArticle.artdescripcion,
     price: sqlArticle.artprecio,
     famId: sqlArticle.famid,
+    famName: sqlArticle.famnombre,
   }
 }
