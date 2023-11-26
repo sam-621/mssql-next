@@ -1,6 +1,13 @@
 import { DetailedHTMLProps, HTMLAttributes, SelectHTMLAttributes } from 'react'
 
-export const Select: React.FC<Props> = ({ options, label, onChange, placeholder, ...rest }) => {
+export const Select: React.FC<Props> = ({
+  options,
+  label,
+  onChange,
+  placeholder,
+  errorMessage,
+  ...rest
+}) => {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onChange(event.target.value)
   }
@@ -27,6 +34,11 @@ export const Select: React.FC<Props> = ({ options, label, onChange, placeholder,
           </option>
         ))}
       </select>
+      {errorMessage && (
+        <div>
+          <span className='text-red-500'>{errorMessage}</span>
+        </div>
+      )}
     </div>
   )
 }
@@ -35,4 +47,5 @@ type Props = DetailedHTMLProps<SelectHTMLAttributes<HTMLSelectElement>, HTMLSele
   label: string
   options: { value: string; label: string }[]
   onChange: (value: string) => void
+  errorMessage?: string
 }

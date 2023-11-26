@@ -42,35 +42,41 @@ export default function ConsultPage() {
   }
 
   return (
-    <PageLayout className='flex-col gap-8'>
-      <div className='flex gap-4 items-center w-full'>
-        <Link href={'/login'}>
-          <MoveLeftIcon />
-        </Link>
-        <h1 className='text-2xl font-semibold'>Consultar</h1>
-      </div>
-      <form className='flex flex-col gap-8'>
-        <div className='flex flex-col gap-4 w-full'>
-          <Input className='max-w-[124px]' label='Clave' onChange={(e) => setId(e.target.value)} />
-          <Input label='Nombre' onChange={(e) => setName(e.target.value)} />
-          <Input label='Descripción' onChange={(e) => setDescription(e.target.value)} />
-          <Input label='Precio' onChange={(e) => setPrice(e.target.value)} />
-          <Select
-            label='Familias'
-            placeholder='Seleccione una familia'
-            options={families.map((f) => ({ label: f.name, value: f.id }))}
-            onChange={(val) => setSelectedFamily(val as string)}
-          />
+    <PageLayout>
+      <div className='flex flex-col gap-8'>
+        <div className='flex gap-4 items-center w-full'>
+          <Link href={'/login'}>
+            <MoveLeftIcon />
+          </Link>
+          <h1 className='text-2xl font-semibold'>Consultar</h1>
         </div>
-        <div className='flex justify-between w-full items-center'>
-          <ErrorMessage message='Error message' />
-          <Button disabled={isLoading} onClick={search}>
-            Buscar
-          </Button>
+        <form className='flex flex-col gap-8'>
+          <div className='flex flex-col gap-4 w-full'>
+            <Input
+              className='max-w-[124px]'
+              label='Clave'
+              onChange={(e) => setId(e.target.value)}
+            />
+            <Input label='Nombre' onChange={(e) => setName(e.target.value)} />
+            <Input label='Descripción' onChange={(e) => setDescription(e.target.value)} />
+            <Input label='Precio' onChange={(e) => setPrice(e.target.value)} />
+            <Select
+              label='Familias'
+              placeholder='Seleccione una familia'
+              options={families.map((f) => ({ label: f.name, value: f.id }))}
+              onChange={(val) => setSelectedFamily(val as string)}
+            />
+          </div>
+          <div className='flex justify-between w-full items-center'>
+            <ErrorMessage message='Error message' />
+            <Button disabled={isLoading} onClick={search}>
+              Buscar
+            </Button>
+          </div>
+        </form>
+        <div>
+          <Table articles={articles} />
         </div>
-      </form>
-      <div>
-        <Table articles={articles} />
       </div>
     </PageLayout>
   )
