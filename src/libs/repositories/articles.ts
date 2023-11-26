@@ -79,35 +79,30 @@ const getById = async (id: string): Promise<Article | null> => {
   return result.data[0]
 }
 
-const create = async (article: Article): Promise<Article | null> => {
+const create = async (article: Omit<Article, 'famName'>): Promise<void> => {
   const result = await sqlQuery<SQLArticle>(`
-  INSERT INTO articles (name, description, price, famId)
-  VALUES (${article.name}, ${article.description}, ${article.price}, ${article.famId})
-  RETURNING *
+  INSERT INTO ARTICULOS (artid, artnombre, artdescripcion, artprecio, famid) 
+  VALUES (${article.id}, '${article.name}', '${article.description}', ${article.price}, ${article.famId})
 `)
 
   if (!result.success) {
     console.log(result.error)
-    return null
   }
-
-  return getArticleMapped(result.data[0])
 }
 
-const update = async (article: Article): Promise<Article | null> => {
+const update = async (article: Article): Promise<void> => {
   const result = await sqlQuery<SQLArticle>(`
-  UPDATE articles
-  SET name = ${article.name}, description = ${article.description}, price = ${article.price}, famId = ${article.famId}
-  WHERE id = ${article.id}
-  RETURNING *
+    UPDATE ARTICULOS SET 
+      artnombre = ${article.name},
+      artdescripcion = ${article.description},
+      artprecio = ${article.price},
+      famid = ${article.famId}
+    WHERE artid = ${article.id}
 `)
 
   if (!result.success) {
     console.log(result.error)
-    return null
   }
-
-  return getArticleMapped(result.data[0])
 }
 
 export const ArticleRepository = {

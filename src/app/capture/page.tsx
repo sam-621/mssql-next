@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { FormEvent, useEffect, useState } from 'react'
 import { getArticlesFiltered, getFamilies } from '../consult/actions'
 import { ArticleRepository } from '@/libs/repositories'
-import { getArticleById } from './actions'
+import { createArticle, getArticleById } from './actions'
 import { toast } from 'sonner'
 import { useDebouncedCallback } from 'use-debounce'
 
@@ -40,6 +40,11 @@ export default function CapturePage() {
   // articles table state
   const [articles, setArticles] = useState<Article[]>([])
 
+  // mutation states
+  const [refetch, setRefetch] = useState(0)
+  const [isCreating, setIsCreating] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
+
   // Fetch families
   useEffect(() => {
     ;(async () => {
@@ -55,7 +60,7 @@ export default function CapturePage() {
 
       setArticles(articles)
     })()
-  }, [])
+  }, [refetch])
 
   const handleSearch = useDebouncedCallback(async (term: string) => {
     if (formState === FormState.UPDATE) {
@@ -102,9 +107,10 @@ export default function CapturePage() {
     setSelectedFamily('')
   }
 
-  const create = (e: FormEvent) => {
+  const create = async (e: FormEvent) => {
     e.preventDefault()
     setErrors({ name: '', description: '', price: '', family: '' })
+    setIsCreating(true)
 
     if (!name || !description || !price || !selectedFamily) {
       setErrors({
@@ -113,8 +119,27 @@ export default function CapturePage() {
         price: !price ? 'El precio es requerido' : '',
         family: !selectedFamily ? 'La familia es requerida' : '',
       })
+      setIsCreating(false)
       return
     }
+
+    if (!Number(price)) {
+      setErrors({ ...errors, price: 'El precio debe ser un número' })
+      setIsCreating(false)
+      return
+    }
+
+    await createArticle({
+      id: String(articles.length + 1),
+      name,
+      description,
+      price,
+      famId: selectedFamily,
+    })
+    setRefetch(refetch + 1)
+
+    toast.success('Artículo creado correctamente')
+    setIsCreating(false)
   }
 
   return (
