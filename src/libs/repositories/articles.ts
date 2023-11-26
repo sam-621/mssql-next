@@ -1,5 +1,4 @@
 import { Article } from '../types'
-import { getArticleMapped } from './mappers'
 import { sqlQuery } from './sql-server'
 
 export type SQLArticle = {

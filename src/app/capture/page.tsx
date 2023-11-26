@@ -6,10 +6,16 @@ import { Article, Family } from '@/libs/types'
 import { Loader2Icon, MoveLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 import { FormEvent, useEffect, useState } from 'react'
-import { getArticlesFiltered, getFamilies } from '../consult/actions'
-import { createArticle, getArticleById, removeArticle, updateArticle } from './actions'
 import { toast } from 'sonner'
 import { useDebouncedCallback } from 'use-debounce'
+import {
+  createArticle,
+  getArticleById,
+  getArticlesFiltered,
+  getFamilies,
+  removeArticle,
+  updateArticle,
+} from '../actions'
 
 enum FormState {
   CREATE,

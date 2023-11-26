@@ -5,8 +5,8 @@ import { Button, ErrorMessage, Input, Select, Table } from '@/components/theme'
 import { MoveLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { getArticlesFiltered, getFamilies } from './actions'
 import { Article, Family } from '@/libs/types'
+import { getArticlesFiltered, getFamilies } from '../actions'
 
 export default function ConsultPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -67,8 +67,7 @@ export default function ConsultPage() {
               onChange={(val) => setSelectedFamily(val as string)}
             />
           </div>
-          <div className='flex justify-between w-full items-center'>
-            <ErrorMessage message='Error message' />
+          <div className='flex justify-end w-full items-center'>
             <Button disabled={isLoading} onClick={search}>
               Buscar
             </Button>
