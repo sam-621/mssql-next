@@ -52,7 +52,7 @@ export default function CapturePage() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [mutatingNoExistingArticle, setMutatingNoExistingArticle] = useState(false)
 
-  // Fetch families
+  // Fetch families for select input
   useEffect(() => {
     ;(async () => {
       const families = await getFamilies()
@@ -61,7 +61,7 @@ export default function CapturePage() {
     })()
   }, [])
 
-  // fetch table articles
+  // fetch table articles when create, delete or update
   useEffect(() => {
     ;(async () => {
       const articles = await getArticlesFiltered('', '', '', '', '')
@@ -73,6 +73,14 @@ export default function CapturePage() {
   const handleSearch = useDebouncedCallback(async (term: string) => {
     if (formState === FormState.UPDATE) {
       setIsSearching(true)
+
+      const checkReaderPermission = await checkPermission('read')
+
+      if (!checkReaderPermission) {
+        toast.error('No tienes permisos para buscar articulos')
+        setIsSearching(false)
+        return
+      }
 
       if (!term) {
         cleanupForm(true)
@@ -181,6 +189,14 @@ export default function CapturePage() {
 
   const deleteArticle = async () => {
     setIsDeleting(true)
+
+    const hasWriterPermission = await checkPermission('write')
+
+    if (!hasWriterPermission) {
+      toast.error('No tienes permisos para realizar esta acción')
+      setIsDeleting(false)
+      return
+    }
 
     if (formState !== FormState.UPDATE) {
       setIsDeleting(false)
