@@ -9,6 +9,7 @@ import { FormEvent, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useDebouncedCallback } from 'use-debounce'
 import {
+  checkPermission,
   createArticle,
   getArticleById,
   getArticlesFiltered,
@@ -122,6 +123,14 @@ export default function CapturePage() {
     e.preventDefault()
     cleanupErrors()
     setIsMutating(true)
+
+    const hasWriterPermission = await checkPermission('write')
+
+    if (!hasWriterPermission) {
+      toast.error('No tienes permisos para realizar esta acción')
+      setIsMutating(false)
+      return
+    }
 
     if (!name || !description || !price || !selectedFamily) {
       setErrors({

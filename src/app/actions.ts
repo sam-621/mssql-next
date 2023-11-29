@@ -1,6 +1,13 @@
 'use server'
 
-import { ArticleRepository, FamilyRepository, getConnection } from '@/libs/repositories'
+import {
+  ArticleRepository,
+  FamilyRepository,
+  checkReaderPermissions,
+  checkWriterPermissions,
+  getConnection,
+  sqlQuery,
+} from '@/libs/repositories'
 import { Article } from '@/libs/types'
 import { ServerActionResult, getJsonFromFormData } from '@/libs/utils'
 import { cookies } from 'next/headers'
@@ -18,7 +25,7 @@ export const authenticate = async (prevState: ServerActionResult, formData: Form
   if (!pool) {
     return {
       success: false,
-      error: 'El usuario o la contraseña son incorrectos',
+      error: 'El usuario o la contraseña son incorrectos o no tienes los permisos necesarios',
       finished: true,
     }
   }
@@ -57,4 +64,12 @@ export const updateArticle = async (article: Omit<Article, 'famName'>) => {
 
 export const removeArticle = async (id: string) => {
   return ArticleRepository.remove(id)
+}
+
+export const checkPermission = (type: 'read' | 'write') => {
+  const isSaUser = cookies().get('username')?.value === 'sa'
+
+  if (isSaUser) return true
+
+  return type === 'read' ? checkReaderPermissions() : checkWriterPermissions()
 }

@@ -1,5 +1,6 @@
 import sql, { ConnectionError, PreparedStatementError, RequestError, TransactionError } from 'mssql'
 import { cookies } from 'next/headers'
+import { HelpRoleMemberResult } from '../types'
 
 export const sqlQuery = async <T>(query: string): Promise<SQLQueryResult<T[]>> => {
   try {
@@ -88,9 +89,45 @@ export const getConnection = async (username: string, password: string) => {
 
     return connection
   } catch (error) {
-    console.error(error)
+    console.error({ ErrorRaro: error })
     return null
   }
+}
+
+export const checkReaderPermissions = async () => {
+  const username = cookies().get('username')?.value ?? process.env.DB_USER
+  const password = cookies().get('password')?.value ?? process.env.BD_PASSWORD
+
+  const pool = await getConnection(username, password)
+
+  if (!pool) {
+    return false
+  }
+
+  const result = await pool
+    .request()
+    .input('rolename', sql.VarChar(50), 'db_DataReader')
+    .execute<HelpRoleMemberResult>('sp_HelpRoleMember')
+
+  return result.recordset.length > 0
+}
+
+export const checkWriterPermissions = async () => {
+  const username = cookies().get('username')?.value ?? process.env.DB_USER
+  const password = cookies().get('password')?.value ?? process.env.BD_PASSWORD
+
+  const pool = await getConnection(username, password)
+
+  if (!pool) {
+    return false
+  }
+
+  const result = await pool
+    .request()
+    .input('rolename', sql.VarChar(50), 'db_DataWriter')
+    .execute<HelpRoleMemberResult>('sp_HelpRoleMember')
+
+  return result.recordset.length > 0
 }
 
 type SQLQuerySuccessResult<T> = {
