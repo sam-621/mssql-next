@@ -6,7 +6,8 @@ import { MoveLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Article, Family } from '@/libs/types'
-import { getArticlesFiltered, getFamilies } from '../actions'
+import { checkPermission, getArticlesFiltered, getFamilies } from '../actions'
+import { toast } from 'sonner'
 
 export default function ConsultPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -28,6 +29,14 @@ export default function ConsultPage() {
 
   const search = async () => {
     setIsLoading(true)
+
+    const checkReaderPermission = await checkPermission('read')
+
+    if (!checkReaderPermission) {
+      toast.error('No tienes permiso para buscar articulos')
+      setIsLoading(false)
+      return
+    }
 
     const articles = await getArticlesFiltered(
       id,
