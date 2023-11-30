@@ -8,34 +8,30 @@ const getManyArticles = async (
   price: string,
   familyId: string
 ): Promise<{ data: Article[]; error: string }> => {
-  let query = `
-    SELECT id=A.artid, name=A.artnombre, description=A.artdescripcion, price=A.artprecio, famId=A.famid, famName=F.famnombre 
-    FROM ARTICULOS A 
-    INNER JOIN Familias F ON F.famid = A.famid
-  `
+  let query = `SELECT * FROM VW_ARTICULOS VA`
 
   if (id || name || description || price || familyId) {
     query += ' WHERE '
   }
 
   if (id) {
-    query += `artid = ${id} AND `
+    query += `id = ${id} AND `
   }
 
   if (name) {
-    query += `artnombre LIKE '%${name}%' AND `
+    query += `name LIKE '%${name}%' AND `
   }
 
   if (description) {
-    query += `artdescripcion LIKE '%${description}%' AND `
+    query += `description LIKE '%${description}%' AND `
   }
 
   if (price) {
-    query += `artprecio = ${price} AND `
+    query += `price = ${price} AND `
   }
 
   if (familyId) {
-    query += `A.famid = ${familyId}`
+    query += `famId = ${familyId}`
   }
 
   // Remove last AND if needed

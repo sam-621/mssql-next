@@ -31,7 +31,11 @@ export const sqlQuery = async <T>(query: string): Promise<SQLQueryResult<T[]>> =
     if (error instanceof RequestError) {
       console.log(error)
 
-      if (error.message.includes('The SELECT permission was denied')) {
+      // error when no select permissions
+      if (
+        error.message.includes("The SELECT permission was denied on the object 'familias'") ||
+        error.message.includes("The SELECT permission was denied on the object 'articulos'")
+      ) {
         return {
           dbError: true,
           error: 'No tienes los permisos necesarios para buscar articulos',
@@ -39,6 +43,16 @@ export const sqlQuery = async <T>(query: string): Promise<SQLQueryResult<T[]>> =
         }
       }
 
+      // error when no view permissions
+      if (error.message.includes("The SELECT permission was denied on the object 'VW_ARTICULOS'")) {
+        return {
+          dbError: true,
+          error: 'No tienes los permisos necesarios para obtener los articulos en tabla',
+          success: false,
+        }
+      }
+
+      // error when no delete permissions
       if (error.message.includes('The DELETE permission was denied')) {
         return {
           dbError: true,
@@ -113,7 +127,7 @@ export const getConnection = async (username: string, password: string) => {
 
     return connection
   } catch (error) {
-    console.error({ ErrorRaro: error })
+    console.error({ error })
     return null
   }
 }

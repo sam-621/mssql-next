@@ -156,7 +156,6 @@ export default function CapturePage() {
     const result =
       formState === FormState.CREATE
         ? await createArticle({
-            id: String(articles.length + 1),
             name,
             description,
             price,
@@ -279,6 +278,7 @@ export default function CapturePage() {
             <div className='flex items-end gap-3'>
               <Input
                 disabled={formState === FormState.CREATE}
+                type='number'
                 className='max-w-[124px]'
                 label='Clave'
                 onChange={async (e) => {

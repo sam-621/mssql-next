@@ -54,11 +54,14 @@ export const getArticleById = async (id: string) => {
   return QueryRepository.getArticleById(id)
 }
 
-export const createArticle = async (article: Omit<Article, 'famName'>) => {
-  return await MutationRepository.mutateArticle(article)
+export const createArticle = async (article: Omit<Article, 'famName' | 'id'>) => {
+  console.log('create')
+  return await MutationRepository.mutateArticle({ id: '', ...article })
 }
 
 export const updateArticle = async (article: Omit<Article, 'famName'>) => {
+  console.log('update')
+
   return await MutationRepository.mutateArticle(article)
 }
 

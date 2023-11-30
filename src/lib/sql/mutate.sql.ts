@@ -9,6 +9,8 @@ import { Article, MutateArticleProcResult } from '../types'
  * @returns Success or error
  */
 const mutateArticle = async (input: Omit<Article, 'famName'>) => {
+  console.log({ input })
+
   try {
     const username = cookies().get('username')?.value ?? process.env.DB_USER
     const password = cookies().get('password')?.value ?? process.env.BD_PASSWORD
