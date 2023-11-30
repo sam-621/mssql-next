@@ -3,3 +3,5 @@ export type HelpRoleMemberResult = {
   MemberName: string
   MemberSID: Record<string, unknown>
 }
+
+export type MutateArticleProcResult = { ArtID: number }

@@ -1,6 +1,6 @@
 import sql, { ConnectionError, PreparedStatementError, RequestError, TransactionError } from 'mssql'
 import { cookies } from 'next/headers'
-import { HelpRoleMemberResult } from '../types'
+import { Article, HelpRoleMemberResult, MutateArticleProcResult } from '../types'
 
 export const sqlQuery = async <T>(query: string): Promise<SQLQueryResult<T[]>> => {
   try {
@@ -128,6 +128,26 @@ export const checkWriterPermissions = async () => {
     .execute<HelpRoleMemberResult>('sp_HelpRoleMember')
 
   return result.recordset.length > 0
+}
+
+export const executeMutateArticle = async (input: Omit<Article, 'famName'>) => {
+  const username = cookies().get('username')?.value ?? process.env.DB_USER
+  const password = cookies().get('password')?.value ?? process.env.BD_PASSWORD
+
+  const pool = await getConnection(username, password)
+
+  if (!pool) {
+    return false
+  }
+
+  await pool
+    .request()
+    .input('ArtName', sql.VarChar(50), input.name)
+    .input('ArtDescription', sql.VarChar(500), input.description)
+    .input('ArtPrice', sql.Numeric(12, 2), input.price)
+    .input('FamID', sql.Int, input.famId)
+    .output('ArtID', sql.Int, input.id)
+    .execute<MutateArticleProcResult>('Sp_MutateVentas')
 }
 
 type SQLQuerySuccessResult<T> = {
