@@ -2,14 +2,13 @@
 
 import { PageLayout } from '@/components/layout'
 import { Button, Input, RadioButton, Select, Table } from '@/components/theme'
-import { Article, Family } from '@/libs/types'
+import { Article, Family } from '@/lib/types'
 import { Loader2Icon, MoveLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 import { FormEvent, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useDebouncedCallback } from 'use-debounce'
 import {
-  checkPermission,
   createArticle,
   getArticleById,
   getArticlesFiltered,
@@ -75,14 +74,6 @@ export default function CapturePage() {
     if (formState === FormState.UPDATE) {
       setIsSearching(true)
 
-      const checkReaderPermission = await checkPermission('read')
-
-      if (!checkReaderPermission) {
-        toast.error('No tienes permisos para buscar articulos')
-        setIsSearching(false)
-        return
-      }
-
       if (!term) {
         cleanupForm(true)
 
@@ -138,14 +129,6 @@ export default function CapturePage() {
     e.preventDefault()
     cleanupErrors()
     setIsMutating(true)
-
-    const hasWriterPermission = await checkPermission('write')
-
-    if (!hasWriterPermission) {
-      toast.error('No tienes permisos para realizar esta acción')
-      setIsMutating(false)
-      return
-    }
 
     if (!name || !description || !price || !selectedFamily) {
       setErrors({
@@ -203,14 +186,6 @@ export default function CapturePage() {
 
   const deleteArticle = async () => {
     setIsDeleting(true)
-
-    const hasWriterPermission = await checkPermission('write')
-
-    if (!hasWriterPermission) {
-      toast.error('No tienes permisos para realizar esta acción')
-      setIsDeleting(false)
-      return
-    }
 
     if (formState !== FormState.UPDATE) {
       setIsDeleting(false)

@@ -1,16 +1,15 @@
 'use server'
 
-import {
-  ArticleRepository,
-  FamilyRepository,
-  checkReaderPermissions,
-  checkWriterPermissions,
-  executeMutateArticle,
-  getConnection,
-  sqlQuery,
-} from '@/libs/repositories'
-import { Article } from '@/libs/types'
-import { ServerActionResult, getJsonFromFormData } from '@/libs/utils'
+// import {
+//   ArticleRepository,
+//   FamilyRepository,
+//   checkReaderPermissions,
+//   checkWriterPermissions,
+//   executeMutateArticle,
+// } from '@/libs/repositories'
+import { getConnection, MutationRepository, QueryRepository } from '@/lib/sql'
+import { Article } from '@/lib/types'
+import { ServerActionResult, getJsonFromFormData } from '@/lib/utils'
 import { cookies } from 'next/headers'
 
 type AuthenticateInput = { username: string; password: string }
@@ -44,36 +43,25 @@ export const getArticlesFiltered = async (
   price: string,
   familyId: string
 ) => {
-  return ArticleRepository.getMany(id, name, description, price, familyId)
+  return QueryRepository.getManyArticles(id, name, description, price, familyId)
 }
 
 export const getFamilies = () => {
-  return FamilyRepository.getMany()
+  return QueryRepository.getManyFamilies()
 }
 
 export const getArticleById = async (id: string) => {
-  return ArticleRepository.getById(id)
+  return QueryRepository.getArticleById(id)
 }
 
 export const createArticle = async (article: Omit<Article, 'famName'>) => {
-  return await executeMutateArticle(article)
+  return await MutationRepository.mutateArticle(article)
 }
 
 export const updateArticle = async (article: Omit<Article, 'famName'>) => {
-  return await executeMutateArticle(article)
-  // return ArticleRepository.update(article)
+  return await MutationRepository.mutateArticle(article)
 }
 
 export const removeArticle = async (id: string) => {
-  return ArticleRepository.remove(id)
-}
-
-export const checkPermission = (type: 'read' | 'write') => {
-  return true
-
-  const isSaUser = cookies().get('username')?.value === 'sa'
-
-  if (isSaUser) return true
-
-  return type === 'read' ? checkReaderPermissions() : checkWriterPermissions()
+  return MutationRepository.removeArticle(id)
 }

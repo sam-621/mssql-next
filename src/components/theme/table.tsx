@@ -1,4 +1,4 @@
-import { Article } from '@/libs/types'
+import { Article } from '@/lib/types'
 import { FC } from 'react'
 
 export const Table: FC<Props> = ({ articles }) => {
