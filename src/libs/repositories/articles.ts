@@ -16,7 +16,7 @@ const getMany = async (
   description: string,
   price: string,
   familyId: string
-): Promise<Article[]> => {
+): Promise<{ data: Article[]; error: string }> => {
   let query = `
     SELECT id=A.artid, name=A.artnombre, description=A.artdescripcion, price=A.artprecio, famId=A.famid, famName=F.famnombre 
     FROM ARTICULOS A 
@@ -56,10 +56,10 @@ const getMany = async (
 
   if (!result.success) {
     console.log(result.error)
-    return []
+    return { data: [], error: result.error }
   }
 
-  return result.data
+  return { data: result.data, error: '' }
 }
 
 const getById = async (id: string): Promise<Article | null> => {

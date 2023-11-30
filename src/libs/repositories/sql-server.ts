@@ -27,6 +27,14 @@ export const sqlQuery = async <T>(query: string): Promise<SQLQueryResult<T[]>> =
     if (error instanceof RequestError) {
       console.log(error)
 
+      if (error.message.includes('The SELECT permission was denied')) {
+        return {
+          dbError: true,
+          error: 'No tienes los permisos necesarios para buscar articulos',
+          success: false,
+        }
+      }
+
       return {
         dbError: true,
         error: 'Error al ejecutar la consulta',
@@ -131,23 +139,76 @@ export const checkWriterPermissions = async () => {
 }
 
 export const executeMutateArticle = async (input: Omit<Article, 'famName'>) => {
-  const username = cookies().get('username')?.value ?? process.env.DB_USER
-  const password = cookies().get('password')?.value ?? process.env.BD_PASSWORD
+  try {
+    const username = cookies().get('username')?.value ?? process.env.DB_USER
+    const password = cookies().get('password')?.value ?? process.env.BD_PASSWORD
 
-  const pool = await getConnection(username, password)
+    const pool = await getConnection(username, password)
 
-  if (!pool) {
-    return false
+    if (!pool) {
+      return {
+        dbError: false,
+        error: 'Un error en la conexión ha ocurrido, vuelve a intentarlo',
+        success: false,
+      }
+    }
+
+    const result = await pool
+      .request()
+      .input('ArtName', sql.VarChar(50), input.name)
+      .input('ArtDescription', sql.VarChar(500), input.description)
+      .input('ArtPrice', sql.Numeric(12, 2), input.price)
+      .input('FamID', sql.Int, input.famId)
+      .output('ArtID', sql.Int, input.id)
+      .execute<MutateArticleProcResult>('Sp_MutateVentas')
+
+    return {
+      success: true,
+      data: result.output.ArtID,
+    }
+  } catch (error) {
+    console.log({ error })
+
+    if (error instanceof RequestError) {
+      console.log({
+        errorTR: error,
+      })
+
+      // proc can be executed
+      if (error.message.includes('The EXECUTE permission was denied')) {
+        return {
+          dbError: true,
+          error: 'No tienes los permisos necesarios para realizar esta acción',
+          success: false,
+        }
+      }
+
+      // trigger error
+      if (error.originalError instanceof AggregateError) {
+        console.log({
+          ss: error.originalError.errors[0].message,
+        })
+
+        return {
+          dbError: true,
+          error: error.originalError.errors[0].message,
+          success: false,
+        }
+      }
+
+      return {
+        dbError: true,
+        error: 'Error al ejecutar la consulta',
+        success: false,
+      }
+    }
+
+    return {
+      dbError: true,
+      error: 'Error al ejecutar la consulta',
+      success: false,
+    }
   }
-
-  await pool
-    .request()
-    .input('ArtName', sql.VarChar(50), input.name)
-    .input('ArtDescription', sql.VarChar(500), input.description)
-    .input('ArtPrice', sql.Numeric(12, 2), input.price)
-    .input('FamID', sql.Int, input.famId)
-    .output('ArtID', sql.Int, input.id)
-    .execute<MutateArticleProcResult>('Sp_MutateVentas')
 }
 
 type SQLQuerySuccessResult<T> = {

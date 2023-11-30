@@ -64,9 +64,9 @@ export default function CapturePage() {
   // fetch table articles when create, delete or update
   useEffect(() => {
     ;(async () => {
-      const articles = await getArticlesFiltered('', '', '', '', '')
+      const { data } = await getArticlesFiltered('', '', '', '', '')
 
-      setArticles(articles)
+      setArticles(data)
     })()
   }, [refetch])
 
@@ -163,21 +163,28 @@ export default function CapturePage() {
       return
     }
 
-    formState === FormState.CREATE
-      ? await createArticle({
-          id: String(articles.length + 1),
-          name,
-          description,
-          price,
-          famId: selectedFamily,
-        })
-      : await updateArticle({
-          id,
-          name,
-          description,
-          price,
-          famId: selectedFamily,
-        })
+    const result =
+      formState === FormState.CREATE
+        ? await createArticle({
+            id: String(articles.length + 1),
+            name,
+            description,
+            price,
+            famId: selectedFamily,
+          })
+        : await updateArticle({
+            id,
+            name,
+            description,
+            price,
+            famId: selectedFamily,
+          })
+
+    if (result.error) {
+      toast.error(result.error)
+      setIsMutating(false)
+      return
+    }
 
     setRefetch(refetch + 1)
 

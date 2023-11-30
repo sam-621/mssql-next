@@ -1,7 +1,7 @@
 'use client'
 
 import { PageLayout } from '@/components/layout'
-import { Button, ErrorMessage, Input, Select, Table } from '@/components/theme'
+import { Button, Input, Select, Table } from '@/components/theme'
 import { MoveLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -38,7 +38,7 @@ export default function ConsultPage() {
       return
     }
 
-    const articles = await getArticlesFiltered(
+    const { data, error } = await getArticlesFiltered(
       id,
       name,
       description,
@@ -46,7 +46,13 @@ export default function ConsultPage() {
       Number(selectedFamily) ? selectedFamily ?? '' : ''
     )
 
-    setArticles(articles)
+    if (error) {
+      toast.error(error)
+      setIsLoading(false)
+      return
+    }
+
+    setArticles(data)
     setIsLoading(false)
   }
 
