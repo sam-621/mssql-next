@@ -57,11 +57,11 @@ export const getArticleById = async (id: string) => {
 
 export const createArticle = async (article: Omit<Article, 'famName'>) => {
   await executeMutateArticle(article)
-  // return ArticleRepository.create(article)
 }
 
 export const updateArticle = async (article: Omit<Article, 'famName'>) => {
-  return ArticleRepository.update(article)
+  await executeMutateArticle(article)
+  // return ArticleRepository.update(article)
 }
 
 export const removeArticle = async (id: string) => {
