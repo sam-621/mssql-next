@@ -62,7 +62,7 @@ const getMany = async (
   return { data: result.data, error: '' }
 }
 
-const getById = async (id: string): Promise<Article | null> => {
+const getById = async (id: string) => {
   const result = await sqlQuery<Article>(`
     SELECT id=A.artid, name=A.artnombre, description=A.artdescripcion, price=A.artprecio, famId=A.famid, famName=F.famnombre 
     FROM ARTICULOS A 
@@ -71,11 +71,16 @@ const getById = async (id: string): Promise<Article | null> => {
   `)
 
   if (!result.success) {
-    console.log(result.error)
-    return null
+    return {
+      error: result.error,
+      data: null,
+    }
   }
 
-  return result.data[0]
+  return {
+    error: '',
+    data: result.data[0],
+  }
 }
 
 const create = async (article: Omit<Article, 'famName'>): Promise<void> => {
@@ -104,13 +109,21 @@ const update = async (article: Omit<Article, 'famName'>): Promise<void> => {
   }
 }
 
-const remove = async (id: string): Promise<void> => {
+const remove = async (id: string) => {
   const result = await sqlQuery<SQLArticle>(`
     DELETE FROM ARTICULOS WHERE artid = ${id}
 `)
 
   if (!result.success) {
-    console.log(result.error)
+    return {
+      error: result.error,
+      data: null,
+    }
+  }
+
+  return {
+    error: '',
+    data: result.data,
   }
 }
 

@@ -59,7 +59,7 @@ export default function CapturePage() {
 
       setFamilies(families)
     })()
-  }, [])
+  }, [formState])
 
   // fetch table articles when create, delete or update
   useEffect(() => {
@@ -68,8 +68,9 @@ export default function CapturePage() {
 
       setArticles(data)
     })()
-  }, [refetch])
+  }, [refetch, formState])
 
+  // fetch article to update
   const handleSearch = useDebouncedCallback(async (term: string) => {
     if (formState === FormState.UPDATE) {
       setIsSearching(true)
@@ -89,9 +90,15 @@ export default function CapturePage() {
         return
       }
 
-      const article = await getArticleById(id)
+      const { data, error } = await getArticleById(id)
 
-      if (!article) {
+      if (error) {
+        toast.error(error)
+        setIsSearching(false)
+        return
+      }
+
+      if (!data) {
         cleanupForm(true)
         setMutatingNoExistingArticle(true)
 
@@ -102,11 +109,11 @@ export default function CapturePage() {
 
       setMutatingNoExistingArticle(false)
 
-      setId(article.id)
-      setName(article.name)
-      setDescription(article.description)
-      setPrice(article.price)
-      setSelectedFamily(article.famId)
+      setId(data.id)
+      setName(data.name)
+      setDescription(data.description)
+      setPrice(data.price)
+      setSelectedFamily(data.famId)
 
       setIsSearching(false)
     }
@@ -216,15 +223,14 @@ export default function CapturePage() {
       return
     }
 
-    const article = await getArticleById(id)
+    const result = await removeArticle(id)
 
-    if (!article) {
+    if (result.error) {
+      toast.error(result.error)
       setIsDeleting(false)
-      toast.error('El artículo que tratas de eliminar no existe')
       return
     }
 
-    await removeArticle(id)
     toast.success('Artículo eliminado correctamente')
     setRefetch(refetch + 1)
 

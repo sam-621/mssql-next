@@ -35,6 +35,14 @@ export const sqlQuery = async <T>(query: string): Promise<SQLQueryResult<T[]>> =
         }
       }
 
+      if (error.message.includes('The DELETE permission was denied')) {
+        return {
+          dbError: true,
+          error: 'No tienes los permisos necesarios para eliminar articulos',
+          success: false,
+        }
+      }
+
       return {
         dbError: true,
         error: 'Error al ejecutar la consulta',
