@@ -257,7 +257,11 @@ export default function CapturePage() {
               >
                 Limpiar
               </Button>
-              <Button disabled={isMutating} type='submit'>
+              <Button
+                disabled={isMutating || (!id && formState === FormState.UPDATE)}
+                withNoIcon={formState === FormState.UPDATE && !id}
+                type='submit'
+              >
                 Grabar
               </Button>
               <Button
